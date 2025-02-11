@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id         Int     @id @default(autoincrement())
+  email      String  @unique
+  password   String
+  nom        String
+  prenom     String
+  telephone  String
+  role       Role
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  
+  Professeur Professeurs?
+  Etudiant   Etudiants?
+  Logs       Logs[]
+}
+
+enum Role {
+  professeur
+  etudiant
+}
+
+model Professeurs {
+  id          Int     @id @default(autoincrement())
+  user_id     Int     @unique
+  statut      Statut
+  photo_profil String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  
+  user        Users @relation(fields: [user_id], references: [id])
+  Matieres    Matieres[]
+}
+
+enum Statut {
+  permanent
+  vacataire
+}
+
+model Matieres {
+  id            Int     @id @default(autoincrement())
+  professeur_id Int
+  nom           String  @unique
+  
+  professeur    Professeurs @relation(fields: [professeur_id], references: [id])
+}
+
+model Etudiants {
+  id                   Int     @id @default(autoincrement())
+  user_id              Int     @unique
+  nom                  String
+  prenom               String
+  numero_etudiant      String  @unique
+  semestre_inscription Int
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
+  
+  user                 Users @relation(fields: [user_id], references: [id])
+  EtudiantModules      EtudiantModules[]
+}
+
+model Modules {
+  id       Int    @id @default(autoincrement())
+  nom      String
+  semestre Int
+  
+  EtudiantModules EtudiantModules[]
+}
+
+model EtudiantModules {
+  etudiant_id Int
+  module_id   Int
+  
+  etudiant    Etudiants @relation(fields: [etudiant_id], references: [id])
+  module      Modules   @relation(fields: [module_id], references: [id])
+  
+  @@id([etudiant_id, module_id])
+}
+
+model Logs {
+  id         Int     @id @default(autoincrement())
+  user_id    Int
+  action_type String
+  details    String?
+  created_at DateTime @default(now())
+  
+  user       Users @relation(fields: [user_id], references: [id])
+}
