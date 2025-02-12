@@ -6,17 +6,17 @@ CREATE TABLE `Users`(
     `email` VARCHAR(255) NOT NULL,
     `password` VARCHAR(255) NOT NULL,
     `nom` VARCHAR(255) NOT NULL,
-    `prenom` VARCHAR(255) NOT NULL, 
+    `prenom` VARCHAR(255) NOT NULL,
     `telephone` VARCHAR(255) NOT NULL,
     `role` ENUM('professeur', 'etudiant') NOT NULL,
+    `photo_profil` VARCHAR(255) NOT NULL,
     `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(), `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP());
 ALTER TABLE
     `Users` ADD UNIQUE `users_email_unique`(`email`);
 CREATE TABLE `Professeurs`(
     `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `user_id` INT NOT NULL,
-    `statut`  ENUM('permanent', 'vacataire')  NOT NULL,
-    `photo_profil` VARCHAR(255) NULL,
+    `statut` ENUM('permanent', 'vacataire') NOT NULL ,
     `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(), `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP());
 CREATE TABLE `Matieres`(
     `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -28,8 +28,6 @@ ALTER TABLE
 CREATE TABLE `Etudiants`(
     `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `user_id` INT NOT NULL,
-    `nom` VARCHAR(50) NOT NULL,
-    `prenom` VARCHAR(50) NOT NULL,
     `numero_etudiant` VARCHAR(20) NOT NULL,
     `semestre_inscription` INT NOT NULL,
     `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(), `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP());
@@ -53,9 +51,9 @@ CREATE TABLE `Logs`(
 ALTER TABLE
     `Professeurs` ADD CONSTRAINT `professeurs_user_id_foreign` FOREIGN KEY(`user_id`) REFERENCES `Users`(`id`);
 ALTER TABLE
-    `Etudiants` ADD CONSTRAINT `etudiants_user_id_foreign` FOREIGN KEY(`user_id`) REFERENCES `Users`(`id`);
-ALTER TABLE
     `Matieres` ADD CONSTRAINT `matieres_professeur_id_foreign` FOREIGN KEY(`professeur_id`) REFERENCES `Professeurs`(`id`);
+ALTER TABLE
+    `Etudiants` ADD CONSTRAINT `etudiants_user_id_foreign` FOREIGN KEY(`user_id`) REFERENCES `Users`(`id`);
 ALTER TABLE
     `Logs` ADD CONSTRAINT `logs_user_id_foreign` FOREIGN KEY(`user_id`) REFERENCES `Users`(`id`);
 ALTER TABLE

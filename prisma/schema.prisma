@@ -21,11 +21,11 @@ model Users {
   prenom     String
   telephone  String
   role       Role
+  photo_profil String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   
   Professeur Professeurs?
-  Etudiant   Etudiants?
   Logs       Logs[]
 }
 
@@ -38,7 +38,6 @@ model Professeurs {
   id          Int     @id @default(autoincrement())
   user_id     Int     @unique
   statut      Statut
-  photo_profil String?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
   
@@ -57,38 +56,6 @@ model Matieres {
   nom           String  @unique
   
   professeur    Professeurs @relation(fields: [professeur_id], references: [id])
-}
-
-model Etudiants {
-  id                   Int     @id @default(autoincrement())
-  user_id              Int     @unique
-  nom                  String
-  prenom               String
-  numero_etudiant      String  @unique
-  semestre_inscription Int
-  created_at           DateTime @default(now())
-  updated_at           DateTime @updatedAt
-  
-  user                 Users @relation(fields: [user_id], references: [id])
-  EtudiantModules      EtudiantModules[]
-}
-
-model Modules {
-  id       Int    @id @default(autoincrement())
-  nom      String
-  semestre Int
-  
-  EtudiantModules EtudiantModules[]
-}
-
-model EtudiantModules {
-  etudiant_id Int
-  module_id   Int
-  
-  etudiant    Etudiants @relation(fields: [etudiant_id], references: [id])
-  module      Modules   @relation(fields: [module_id], references: [id])
-  
-  @@id([etudiant_id, module_id])
 }
 
 model Logs {

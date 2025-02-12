@@ -1,15 +1,15 @@
 use db_prof_student_manager;
 -- Ajout des utilisateurs
-INSERT INTO Users (email, password, role, nom, prenom, telephone) VALUES
-('prof1@example.com', 'hashedpassword1', 'professeur', 'Dupont', 'Jean', '0601020304'),
-('prof2@example.com', 'hashedpassword2', 'professeur', 'Martin', 'Claire', '0605060708'),
-('etudiant1@example.com', 'hashedpassword3', 'etudiant', 'Durand', 'Paul', '0611121314'),
-('etudiant2@example.com', 'hashedpassword4', 'etudiant', 'Moreau', 'Sophie', '0615161718');
+INSERT INTO Users (email, password, role, nom, prenom, telephone, photo_profil) VALUES
+('prof1@example.com', 'hashedpassword1', 'professeur', 'Dupont', 'Jean', '0601020304', 'prof-1739320958895.jpg'),
+('prof2@example.com', 'hashedpassword2', 'professeur', 'Martin', 'Claire', '0601020304', 'prof-1739320958895.jpg'),
+('etudiant1@example.com', 'hashedpassword3', 'etudiant', 'Durand', 'Paul', '0601020304', 'prof-1739320958895.jpg'),
+('etudiant2@example.com', 'hashedpassword4', 'etudiant', 'Moreau', 'Sophie', '0601020304', 'prof-1739320958895.jpg');
 
 -- Ajout des professeurs
-INSERT INTO Professeurs (user_id, statut, photo_profil) VALUES
-(1, 'permanent', 'prof1.jpg'),
-(2, 'vacataire', 'prof2.jpg');
+INSERT INTO Professeurs (user_id, statut) VALUES
+(1, 'permanent'),
+(2, 'vacataire');
 
 -- Ajout des matières
 INSERT INTO Matieres (professeur_id, nom) VALUES
@@ -18,9 +18,9 @@ INSERT INTO Matieres (professeur_id, nom) VALUES
 (2, 'Informatique');
 
 -- Ajout des étudiants
-INSERT INTO Etudiants (user_id, nom, prenom, numero_etudiant, semestre_inscription) VALUES
-(3, 'Durand', 'Paul', 'E12345', 1),
-(4, 'Moreau', 'Sophie', 'E67890', 2);
+INSERT INTO Etudiants (user_id, numero_etudiant, semestre_inscription) VALUES
+(3, 'E12345', 1),
+(4, 'E67890', 2);
 
 -- Ajout des modules
 INSERT INTO Modules (nom, semestre) VALUES
