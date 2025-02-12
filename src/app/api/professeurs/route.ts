@@ -7,7 +7,7 @@ import { writeFile } from 'fs/promises';
 export async function GET() {
   try {
     const professeurs = await prisma.professeurs.findMany({
-      include: { user: true, Matieres: true }
+      include: { user: true, MatieresDetails: true }
     });
     return NextResponse.json(professeurs);
   } catch (error) {
@@ -26,7 +26,7 @@ const professeurSchema = z.object({
   email: z.string().email(),
   telephone: z.string().min(10),
   statut: z.enum(['permanent', 'vacataire']),
-  matieres: z.array(z.string()),
+  matieresdetails: z.array(z.string()),
   password: z.string().min(8)
 });
 
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     const data = Object.fromEntries(formData.entries());
     const parsedData = professeurSchema.parse({
       ...data,
-      matieres: JSON.parse(data.matieres as string)
+      matieresdetails: JSON.parse(data.matieresdetails as string)
     });
 
     // Upload de la photo
@@ -71,10 +71,10 @@ export async function POST(request: Request) {
       });
 
       // Liaison des matières
-      await tx.matieres.createMany({
-        data: parsedData.matieres.map(matiere => ({
+      await tx.matieresDetails.createMany({
+        data: parsedData.matieresdetails.map((matiere: string) => ({
           professeur_id: professeur.id,
-          nom: matiere
+          matiere_id: Number(matiere)
         })),
         skipDuplicates: true
       });

@@ -12,29 +12,15 @@ INSERT INTO Professeurs (user_id, statut) VALUES
 (2, 'vacataire');
 
 -- Ajout des matières
-INSERT INTO Matieres (professeur_id, nom) VALUES
-(1, 'Mathématiques'),
-(1, 'Physique'),
-(2, 'Informatique');
+INSERT INTO Matieres ( nom) VALUES
+('Mathématiques'),
+('Physique'),
+('Informatique');
 
--- Ajout des étudiants
-INSERT INTO Etudiants (user_id, numero_etudiant, semestre_inscription) VALUES
-(3, 'E12345', 1),
-(4, 'E67890', 2);
-
--- Ajout des modules
-INSERT INTO Modules (nom, semestre) VALUES
-('Algèbre Linéaire', 1),
-('Programmation en C', 1),
-('Analyse Mathématique', 2),
-('Bases de Données', 2);
-
--- Inscription des étudiants aux modules
-INSERT INTO EtudiantModules (etudiant_id, module_id) VALUES
-(1, 1),
-(1, 2),
-(2, 3),
-(2, 4);
+INSERT INTO matieresdetails (professeur_id, matiere_id) VALUES
+(1,1),
+(2,2),
+(1,3);
 
 -- Ajout des logs
 INSERT INTO Logs (user_id, action_type, details) VALUES

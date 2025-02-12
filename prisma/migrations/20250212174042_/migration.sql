@@ -1,6 +1,3 @@
-DROP DATABASE IF EXISTS db_prof_student_manager;
-CREATE DATABASE IF NOT EXISTS db_prof_student_manager;
-USE db_prof_student_manager;
 -- CreateTable
 CREATE TABLE `Users` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -12,7 +9,7 @@ CREATE TABLE `Users` (
     `role` ENUM('professeur', 'etudiant') NOT NULL,
     `photo_profil` VARCHAR(191) NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `Users_email_key`(`email`),
     PRIMARY KEY (`id`)
@@ -24,7 +21,7 @@ CREATE TABLE `Professeurs` (
     `user_id` INTEGER NOT NULL,
     `statut` ENUM('permanent', 'vacataire') NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `Professeurs_user_id_key`(`user_id`),
     PRIMARY KEY (`id`)

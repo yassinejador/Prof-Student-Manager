@@ -42,7 +42,8 @@ model Professeurs {
   updated_at  DateTime @updatedAt
   
   user        Users @relation(fields: [user_id], references: [id])
-  Matieres    Matieres[]
+
+  MatieresDetails MatieresDetails[]
 }
 
 enum Statut {
@@ -52,10 +53,18 @@ enum Statut {
 
 model Matieres {
   id            Int     @id @default(autoincrement())
-  professeur_id Int
   nom           String  @unique
   
+  MatieresDetails MatieresDetails[]
+}
+
+model MatieresDetails {
+  id            Int     @id @default(autoincrement())
+  professeur_id Int
+  matiere_id    Int
+  
   professeur    Professeurs @relation(fields: [professeur_id], references: [id])
+  matiere       Matieres @relation(fields: [matiere_id], references: [id])
 }
 
 model Logs {
