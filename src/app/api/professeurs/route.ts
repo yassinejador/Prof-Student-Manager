@@ -31,6 +31,7 @@ const professeurSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const ACTION_TYPE: string = 'CREATE_PROFESSEUR'
   const formData = await request.formData();
 
   try {
@@ -86,7 +87,7 @@ export async function POST(request: Request) {
     await prisma.logs.create({
       data: {
         user_id: result.user_id,
-        action_type: 'CREATE_PROFESSEUR',
+        action_type: ACTION_TYPE,
         details: JSON.stringify(result)
       }
     });

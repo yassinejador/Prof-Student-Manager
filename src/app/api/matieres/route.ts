@@ -6,13 +6,11 @@ export async function GET(request: Request) {
   const semestre = searchParams.get('semestre');
 
   try {
-    const modules = await prisma.modules.findMany({
-      where: semestre ? { semestre: Number(semestre) } : {}
-    });
-    return NextResponse.json(modules);
+    const matieres = await prisma.matieres.findMany();
+    return NextResponse.json(matieres);
   } catch (error) {
     return NextResponse.json(
-      { error: "Erreur lors de la récupération" },
+      { error: "Erreur lors de la récupération de matieres" },
       { status: 500 }
     );
   }
