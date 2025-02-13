@@ -1,10 +1,10 @@
 use db_prof_student_manager;
 -- Ajout des utilisateurs
 INSERT INTO Users (email, password, role, nom, prenom, telephone, photo_profil) VALUES
-('prof1@example.com', 'hashedpassword1', 'professeur', 'Dupont', 'Jean', '0601020304', 'prof-1739320958895.jpg'),
-('prof2@example.com', 'hashedpassword2', 'professeur', 'Martin', 'Claire', '0601020304', 'prof-1739320958895.jpg'),
-('etudiant1@example.com', 'hashedpassword3', 'etudiant', 'Durand', 'Paul', '0601020304', 'prof-1739320958895.jpg'),
-('etudiant2@example.com', 'hashedpassword4', 'etudiant', 'Moreau', 'Sophie', '0601020304', 'prof-1739320958895.jpg');
+('prof1@example.com', 'hashedpassword1', 'professeur', 'Dupont', 'Jean', '0601020304', 'default-user.png'),
+('prof2@example.com', 'hashedpassword2', 'professeur', 'Martin', 'Claire', '0601020304', 'default-user.png'),
+('etudiant1@example.com', 'hashedpassword3', 'etudiant', 'Durand', 'Paul', '0601020304', 'default-user.png'),
+('etudiant2@example.com', 'hashedpassword4', 'etudiant', 'Moreau', 'Sophie', '0601020304', 'default-user.png');
 
 -- Ajout des professeurs
 INSERT INTO Professeurs (user_id, statut) VALUES

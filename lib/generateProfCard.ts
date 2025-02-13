@@ -32,7 +32,7 @@ export async function generateProfCard(professeur: {
     // Photo de profil
     if (professeur.user.photo_profil) {
         try {
-            const photo = await fetch(professeur.user.photo_profil)
+            const photo = await fetch(`http://localhost:3000/images/users/${professeur.user.photo_profil}`)
             const img = await pdfDoc.embedPng(await photo.buffer())
             page.drawImage(img, {
                 x: 60,
@@ -56,8 +56,8 @@ export async function generateProfCard(professeur: {
     })
 
     // Matières
-    const matieres = professeur.MatieresDetails.map((md) => md.matiere.nom).join('\n')
-    page.drawText(`Matières enseignées :\n${matieres}`, {
+    const matieres = professeur.MatieresDetails.map((md) => md.matiere.nom).join('.\n')
+    page.drawText(`Matières enseignées :\n${matieres}.`, {
         x: 200,
         y: 260,
         font,
