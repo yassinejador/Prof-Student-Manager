@@ -201,3 +201,123 @@ export async function POST(request: Request) {
     );
   }
 }
+
+// Ajoutez ce schéma de validation pour les mises à jour
+const professeurUpdateSchema = z.object({
+  nom: z.string().min(2).optional(),
+  prenom: z.string().min(2).optional(),
+  email: z.string().email().optional(),
+  telephone: z.string().min(10).optional(),
+  statut: z.enum(['permanent', 'vacataire']).optional(),
+  password: z.string().min(8).optional()
+}).partial();
+
+export async function PATCH(request: Request) {
+  return handleUpdate(request);
+}
+
+async function handleUpdate(request: Request) {
+  const ACTION_TYPE = 'UPDATE_PROFESSEUR';
+  const formData = await request.formData();
+
+  try {
+    const professeurId = formData.get('professeur_id');
+    if (!professeurId) {
+      return NextResponse.json({ error: "Professeur ID requis" }, { status: 400 });
+    }
+
+    const existingProfesseur = await prisma.professeurs.findUnique({
+      where: { id: Number(professeurId) },
+      include: { user: true }
+    });
+
+    if (!existingProfesseur) {
+      return NextResponse.json({ error: "Professeur introuvable" }, { status: 404 });
+    }
+
+    const userId = existingProfesseur.user_id;
+    const rawData = Object.fromEntries(formData.entries());
+    
+    // Gestion de la photo séparément
+    const photo = formData.get('photo_profil') as File | null;
+    delete rawData.photo_profil;
+    delete rawData.professeur_id;
+
+    // Validation différente selon le type de mise à jour
+    const parsedData = professeurUpdateSchema.parse(rawData);
+
+    // Séparer les données de l'utilisateur et du professeur
+    const { statut, ...userData } = parsedData;
+
+    // Traitement de la photo
+    let filename = existingProfesseur.user.photo_profil;
+    if (photo && photo.size > 0) {
+      const photoBuffer = Buffer.from(await photo.arrayBuffer());
+      filename = `prof-${Date.now()}${path.extname(photo.name)}`;
+      await writeFile(path.join(process.cwd(), 'public/images/users/', filename), photoBuffer);
+    }
+
+    // Hash du mot de passe si fourni
+    const hashedPassword = userData.password 
+      ? await bcrypt.hash(userData.password, 10)
+      : undefined;
+
+    const result = await prisma.$transaction(async (tx) => {
+      // Mise à jour de l'utilisateur
+      const updatedUser = await tx.users.update({
+        where: { id: userId },
+        data: {
+          ...userData,
+          photo_profil: filename,
+          ...(hashedPassword && { password: hashedPassword })
+        }
+      });
+
+      // Mise à jour du professeur
+      const updatedProfesseur = await tx.professeurs.update({
+        where: { id: Number(professeurId) },
+        data: {
+          statut: statut
+        }
+      });
+
+      // Journalisation
+      await tx.logs.create({
+        data: {
+          user_id: userId,
+          action_type: ACTION_TYPE,
+          details: JSON.stringify({
+            ...userData,
+            statut: statut,
+            photo_profil: filename,
+          })
+        }
+      });
+
+      return {
+        user: updatedUser,
+        professeur: updatedProfesseur,
+      };
+    });
+
+    return NextResponse.json(result, { status: 200 });
+
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour:', error);
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: "Erreur de validation", details: error.errors },
+        { status: 400 }
+      );
+    }
+    
+    return NextResponse.json(
+      { 
+        error: "Erreur serveur",
+        message: error instanceof Error ? error.message : 'Erreur inconnue' 
+      },
+      { status: 500 }
+    );
+  }
+}
