@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, GraduationCap, BookOpen, User } from "lucide-react";
+import { LayoutDashboard, GraduationCap, BookOpen, User, Logs } from "lucide-react";
 
 export function MainNav() {
   const pathname = usePathname();
@@ -12,6 +12,7 @@ export function MainNav() {
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
     { name: "Professeurs", href: "/professeurs", icon: GraduationCap },
     { name: "Matieres", href: "/matieres", icon: BookOpen },
+    { name: "Logs", href: "/logs", icon: Logs },
     { name: "Profile", href: "/profile", icon: User },
   ];
 

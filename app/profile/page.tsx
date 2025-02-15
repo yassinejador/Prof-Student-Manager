@@ -119,9 +119,9 @@ export default function ProfilePage() {
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Personal Information</CardTitle>
+            <CardTitle>Information Personel</CardTitle>
             <CardDescription>
-              Update your personal information here.
+              Modifiez vos informations personnelles
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
