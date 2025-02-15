@@ -2,9 +2,7 @@ use db_prof_student_manager;
 -- Ajout des utilisateurs
 INSERT INTO Users (email, password, role, nom, prenom, telephone, photo_profil) VALUES
 ('prof1@example.com', 'hashedpassword1', 'professeur', 'Dupont', 'Jean', '0601020304', 'default-user.png'),
-('prof2@example.com', 'hashedpassword2', 'professeur', 'Martin', 'Claire', '0601020304', 'default-user.png'),
-('etudiant1@example.com', 'hashedpassword3', 'etudiant', 'Durand', 'Paul', '0601020304', 'default-user.png'),
-('etudiant2@example.com', 'hashedpassword4', 'etudiant', 'Moreau', 'Sophie', '0601020304', 'default-user.png');
+('prof2@example.com', 'hashedpassword2', 'professeur', 'Martin', 'Claire', '0601020304', 'default-user.png');
 
 -- Ajout des professeurs
 INSERT INTO Professeurs (user_id, statut) VALUES
@@ -26,4 +24,4 @@ INSERT INTO matieresdetails (professeur_id, matiere_id) VALUES
 INSERT INTO Logs (user_id, action_type, details) VALUES
 (1, 'connexion', 'Connexion réussie'),
 (2, 'ajout_matiere', 'Ajout de la matière Informatique'),
-(3, 'inscription_module', 'Inscription à Algèbre Linéaire et Programmation en C');
+(1, 'inscription_module', 'Inscription à Algèbre Linéaire et Programmation en C');
