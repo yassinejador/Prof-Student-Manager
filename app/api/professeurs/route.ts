@@ -37,7 +37,7 @@ const professeurSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const ACTION_TYPE = 'CREATE_PROFESSEUR';
+  var action;
   const formData = await request.formData();
 
   try {
@@ -45,6 +45,7 @@ export async function POST(request: Request) {
 
     if (excelFile) {
       // Process Excel file upload
+      action= 'CREATE_PROFESSEUR(S)_VIA_EXCEL'
       const buffer = Buffer.from(await excelFile.arrayBuffer());
       const workbook = XLSX.read(buffer, { type: 'buffer' });
       const sheetName = workbook.SheetNames[0];
@@ -140,6 +141,7 @@ export async function POST(request: Request) {
 
     } else {
       // Process single professor form data
+      action= 'CREATE_PROFESSEUR'
       const data = Object.fromEntries(formData.entries());
       const parsedData = professeurSchema.parse({
         ...data,
