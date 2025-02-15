@@ -33,6 +33,7 @@ import Link from "next/link";
 
 export default function ProfesseursPage() {
   const [professeurs, setProfesseurs] = useState<Professeurs[]>([]);
+  const [inputMethod, setInputMethod] = useState<"manual" | "xlsx">("manual");
 
   useEffect(() => {
     fetchProfesseurs();
@@ -53,20 +54,36 @@ export default function ProfesseursPage() {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const data = new FormData();
-    const file = formData.get("excel_file") as File | null;
 
-    if (file && file.size > 0) {
-      data.append("excel_file", file);
-    }
-    else {
-      data.append("email", formData.get("email") as string);
-      data.append("password", formData.get("password") as string);
-      data.append("nom", formData.get("nom") as string);
-      data.append("prenom", formData.get("prenom") as string);
-      data.append("telephone", formData.get("telephone") as string);
-      data.append("statut", formData.get("statut") as string);
-      data.append("photo_profil", formData.get("photo_profil") as File);
+    if (inputMethod === "manual") {
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
+      const nom = formData.get("nom") as string;
+      const prenom = formData.get("prenom") as string;
+      const telephone = formData.get("telephone") as string;
+      const statut = formData.get("statut") as string;
+      const photo_profil = formData.get("photo_profil") as File;
+
+      if (!email || !password || !nom || !prenom || !telephone || !statut ||(!photo_profil || photo_profil.size === 0)) {
+        alert("Please fill all required fields for manual entry.");
+        return;
+      }
+
+      data.append("email", email);
+      data.append("password", password);
+      data.append("nom", nom);
+      data.append("prenom", prenom);
+      data.append("telephone", telephone);
+      data.append("statut", statut);
+      data.append("photo_profil", photo_profil);
       data.append("matieresdetails", "[\"1\",\"2\"]");
+    } else {
+      const file = formData.get("excel_file") as File;
+      if (!file || file.size === 0) {
+        alert("Please upload an XLSX file.");
+        return;
+      }
+      data.append("excel_file", file);
     }
 
     try {
@@ -76,7 +93,6 @@ export default function ProfesseursPage() {
       });
 
       if (!response.ok) throw new Error("Failed to create professor");
-      console.log(data);
       fetchProfesseurs();
       (document.getElementById("create-dialog-trigger") as HTMLButtonElement)?.click();
     } catch (error) {
@@ -91,7 +107,6 @@ export default function ProfesseursPage() {
       });
 
       if (!response.ok) throw new Error("Failed to delete professor");
-
       fetchProfesseurs();
     } catch (error) {
       console.error("Error deleting professor:", error);
@@ -115,115 +130,128 @@ export default function ProfesseursPage() {
             </DialogHeader>
             <form onSubmit={handleCreate}>
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Form fields remain the same as original */}
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="Entrez l'email"
-
-                    />
+                <RadioGroup
+                  value={inputMethod}
+                  onValueChange={(value: "manual" | "xlsx") => setInputMethod(value)}
+                  className="flex space-x-4"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="manual" id="manual" />
+                    <Label htmlFor="manual">Manual Entry</Label>
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="nom">Nom</Label>
-                    <Input
-                      id="nom"
-                      name="nom"
-                      placeholder="Entrez le nom"
-
-                    />
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="xlsx" id="xlsx" />
+                    <Label htmlFor="xlsx">Upload XLSX</Label>
                   </div>
+                </RadioGroup>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="prenom">Prénom</Label>
-                    <Input
-                      id="prenom"
-                      name="prenom"
-                      placeholder="Entrez le prénom"
-
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="telephone">Téléphone</Label>
-                    <Input
-                      id="telephone"
-                      name="telephone"
-                      type="tel"
-                      placeholder="Entrez le téléphone"
-
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Mot de passe</Label>
-                    <Input
-                      id="password"
-                      name="password"
-                      type="password"
-                      placeholder="Entrez le mot de passe"
-
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Statut</Label>
-                    <RadioGroup
-                      name="statut"
-                      defaultValue="permanent"
-                      className="flex items-center space-x-4"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="permanent" id="r2" />
-                        <Label htmlFor="r2">Permanent</Label>
+                {inputMethod === "manual" ? (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          placeholder="Entrez l'email"
+                          required
+                        />
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="vacataire" id="r3" />
-                        <Label htmlFor="r3">Vacataire</Label>
+                      <div className="space-y-2">
+                        <Label htmlFor="nom">Nom</Label>
+                        <Input
+                          id="nom"
+                          name="nom"
+                          placeholder="Entrez le nom"
+                          required
+                        />
                       </div>
-                    </RadioGroup>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="photo_profil">Photo de Profil</Label>
-                    <Input
-                      id="photo_profil"
-                      name="photo_profil"
-                      type="file"
-                      accept="image/*"
-                    />
-                  </div>
-
+                      <div className="space-y-2">
+                        <Label htmlFor="prenom">Prénom</Label>
+                        <Input
+                          id="prenom"
+                          name="prenom"
+                          placeholder="Entrez le prénom"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="telephone">Téléphone</Label>
+                        <Input
+                          id="telephone"
+                          name="telephone"
+                          type="tel"
+                          placeholder="Entrez le téléphone"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="password">Mot de passe</Label>
+                        <Input
+                          id="password"
+                          name="password"
+                          type="password"
+                          placeholder="Entrez le mot de passe"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Statut</Label>
+                        <RadioGroup
+                          name="statut"
+                          defaultValue="permanent"
+                          className="flex items-center space-x-4"
+                          required
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="permanent" id="r2" />
+                            <Label htmlFor="r2">Permanent</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="vacataire" id="r3" />
+                            <Label htmlFor="r3">Vacataire</Label>
+                          </div>
+                        </RadioGroup>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="photo_profil">Photo de Profil</Label>
+                        <Input
+                          id="photo_profil"
+                          name="photo_profil"
+                          type="file"
+                          accept="image/*"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-foreground">
+                        Matières
+                      </Label>
+                      <select
+                        multiple
+                        name="matieresdetails"
+                        className="flex h-32 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        required
+                      >
+                        <option value="1">Math</option>
+                        <option value="2">OOP</option>
+                        <option value="3">Physique</option>
+                      </select>
+                    </div>
+                  </>
+                ) : (
                   <div className="space-y-2">
                     <Label htmlFor="excel_file">Ajouter des professeurs via fichier XLSX</Label>
                     <Input
                       id="excel_file"
                       name="excel_file"
-                      defaultValue={undefined}
                       type="file"
+                      accept=".xlsx"
+                      required
                     />
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-foreground">
-                    Matières
-                  </Label>
-                  <select
-                    multiple
-                    name="matieresdetails"
-                    className="flex h-32 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-
-                  >
-                    <option value="1">Math</option>
-                    <option value="2">OOP</option>
-                    <option value="3">Physique</option>
-                  </select>
-                </div>
+                )}
 
                 <Button type="submit" className="w-full">
                   Ajouter Professeur
