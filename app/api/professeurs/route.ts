@@ -17,6 +17,7 @@ export async function GET() {
         }
       }
     });
+    console.log(professeurs);
     return NextResponse.json(professeurs);
   } catch (error) {
     return NextResponse.json(
