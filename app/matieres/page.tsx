@@ -46,32 +46,29 @@ export default function MatieresPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-3xl font-bold">Matieres</h1>
+        <h1 className="text-3xl font-bold">Matières</h1>
         <Dialog>
           <DialogTrigger asChild>
             <Button>
               <PlusCircle className="mr-2 h-4 w-4" />
-              Add Subject
+              Ajouter matières
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add New Subject</DialogTitle>
+              <DialogTitle>Ajouter nouveau  Matières</DialogTitle>
             </DialogHeader>
            <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="code">Subject Code</Label>
+                <Label htmlFor="code">Code matières</Label>
                 <Input id="code" placeholder="Enter subject code" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="name">Subject Name</Label>
+                <Label htmlFor="name">Nom matières</Label>
                 <Input id="name" placeholder="Enter subject name" />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="credits">Credits</Label>
-                <Input id="credits" type="number" placeholder="Enter credits" />
-              </div>
-              <Button className="w-full">Add Subject</Button>
+              
+              <Button className="w-full">Ajouter Matières</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -83,7 +80,7 @@ export default function MatieresPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Code</TableHead>
-                <TableHead>Name</TableHead>
+                <TableHead>Nom</TableHead>
                 <TableHead>Credits</TableHead>
                 <TableHead>Professeur</TableHead>
                 <TableHead>Actions</TableHead>
@@ -105,13 +102,13 @@ export default function MatieresPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleEdit(subject.id)}>
-                          Edit
+                         Modifier
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleDelete(subject.id)}
                           className="text-red-500"
                         >
-                          Delete
+                          Supprimer
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

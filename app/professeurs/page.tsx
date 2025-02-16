@@ -121,12 +121,12 @@ export default function ProfesseursPage() {
           <DialogTrigger id="create-dialog-trigger" asChild>
             <Button>
               <PlusCircle className="mr-2 h-4 w-4" />
-              Add Professeur
+              Ajouter Professeur
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add New Professeur</DialogTitle>
+              <DialogTitle>Ajouter Nouveau Professeur</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleCreate}>
               <div className="space-y-4">
@@ -137,11 +137,11 @@ export default function ProfesseursPage() {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="manual" id="manual" />
-                    <Label htmlFor="manual">Manual Entry</Label>
+                    <Label htmlFor="manual">Entré manuel</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="xlsx" id="xlsx" />
-                    <Label htmlFor="xlsx">Upload XLSX</Label>
+                    <Label htmlFor="xlsx">Importer XLSX</Label>
                   </div>
                 </RadioGroup>
 
@@ -226,7 +226,7 @@ export default function ProfesseursPage() {
                     </div>
                     <div className="space-y-2">
                       <Label className="text-sm font-medium text-foreground">
-                        Matières
+                      Matières
                       </Label>
                       <select
                         multiple
@@ -237,6 +237,7 @@ export default function ProfesseursPage() {
                         <option value="1">Math</option>
                         <option value="2">OOP</option>
                         <option value="3">Physique</option>
+                        <option value="3">Informatique</option>
                       </select>
                     </div>
                   </>
@@ -254,7 +255,7 @@ export default function ProfesseursPage() {
                 )}
 
                 <Button type="submit" className="w-full">
-                  Ajouter Professeur
+                Ajouter Professeur
                 </Button>
               </div>
             </form>
@@ -270,9 +271,9 @@ export default function ProfesseursPage() {
                 <TableHead>Professeur ID</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Nom</TableHead>
-                <TableHead>Prenom</TableHead>
-                <TableHead>Telephone</TableHead>
-                <TableHead>Created at</TableHead>
+                <TableHead>Prénom</TableHead>
+                <TableHead>Téléphone</TableHead>
+                <TableHead>Crée en</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -295,14 +296,14 @@ export default function ProfesseursPage() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem>
                           <Link href={`http://localhost:3000/api/professeurs/${professor.id}/card`}>
-                            Card Professionnelle
+                            Carte Professionnelle
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                          Edit
+                          Modifier
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleDelete(professor.id)}>
-                          <span className="text-red-500">Delete</span>
+                          <span className="text-red-500">Supprimer</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
