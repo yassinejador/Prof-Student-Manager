@@ -30,10 +30,12 @@ import {
 import { Professeurs } from "@/types/route";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ProfesseursPage() {
   const [professeurs, setProfesseurs] = useState<Professeurs[]>([]);
   const [inputMethod, setInputMethod] = useState<"manual" | "xlsx">("manual");
+  const router = useRouter();
 
   useEffect(() => {
     fetchProfesseurs();
@@ -235,8 +237,7 @@ export default function ProfesseursPage() {
                         required
                       >
                         <option value="1">Math</option>
-                        <option value="2">OOP</option>
-                        <option value="3">Physique</option>
+                        <option value="2">Physique</option>
                         <option value="3">Informatique</option>
                       </select>
                     </div>
@@ -279,7 +280,7 @@ export default function ProfesseursPage() {
             </TableHeader>
             <TableBody>
               {professeurs.map((professor) => (
-                <TableRow key={professor.id}>
+                <TableRow className="cursor-pointer" key={professor.id}>
                   <TableCell>{professor.id}</TableCell>
                   <TableCell>{professor.user.email}</TableCell>
                   <TableCell>{professor.user.nom}</TableCell>
@@ -295,12 +296,14 @@ export default function ProfesseursPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem>
-                          <Link href={`http://localhost:3000/api/professeurs/${professor.id}/card`}>
-                            Carte Professionnelle
+                          <Link href={`/professeurs/${professor.id}`}>
+                            Details
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                          Modifier
+                          <Link href={`http://localhost:3000/api/professeurs/${professor.id}/card`}>
+                            Carte Professionnelle
+                          </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleDelete(professor.id)}>
                           <span className="text-red-500">Supprimer</span>
