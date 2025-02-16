@@ -27,178 +27,134 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-// Définir le type pour une Matière
-interface Matiere {
-  id: number;
-  nom: string;
-}
+import { Matieres } from "@/types/route";
 
 export default function MatieresPage() {
-  const [matieres, setMatieres] = useState<Matiere[]>([]);
-  const [selectedMatiere, setSelectedMatiere] = useState<Matiere | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const [newMatiereName, setNewMatiereName] = useState<string>("");
-  const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false); // Nouveaux états
+  const [matieres, setMatieres] = useState<Matieres[]>([]);
+  const [selectedMatieres, setSelectedMatieres] = useState<Matieres | null>(
+    null
+  );
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [newMatieresName, setNewMatieresName] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [operationType, setOperationType] = useState<"add" | "edit" | "delete">(
+    "add"
+  );
 
-  // Récupérer les matières depuis l'API avec fetch
   useEffect(() => {
-    fetch("/api/matieres")
-      .then((response) => response.json())
-      .then((data: Matiere[]) => setMatieres(data))
-      .catch((error) => {
-        console.error("Erreur lors de la récupération des matières :", error);
-      });
+    fetchMatieres();
   }, []);
 
+  const fetchMatieres = () => {
+    fetch("/api/matieres")
+      .then((response) => response.json())
+      .then(setMatieres)
+      .catch(console.error);
+  };
+
   const handleDelete = (id: number) => {
-    fetch(`/api/matieres/${id}`, {
-      method: "DELETE",
-    })
+    fetch(`/api/matieres/${id}`, { method: "DELETE" })
       .then((response) => {
         if (response.ok) {
-          setMatieres(matieres.filter((matiere) => matiere.id !== id));
-        } else {
-          console.error("Erreur lors de la suppression de la matière");
+          setMatieres(matieres.filter((m) => m.id !== id));
+          showSuccess("delete");
         }
       })
-      .catch((error) => {
-        console.error("Erreur lors de la suppression :", error);
-      });
+      .catch(console.error);
   };
 
-  const handleEdit = (matiere: Matiere) => {
-    setSelectedMatiere(matiere);
-    setIsEditModalOpen(true);
+  const showSuccess = (type: "add" | "edit" | "delete") => {
+    setOperationType(type);
+    setIsSuccess(true);
+    setTimeout(() => setIsSuccess(false), 2000);
   };
 
-  const handleCloseModal = () => {
-    setSelectedMatiere(null);
-    setIsEditModalOpen(false);
-    setIsSuccess(false);
-  };
-
-  const handleSave = () => {
-    if (selectedMatiere) {
-      fetch(`/api/matieres/${selectedMatiere.id}`, {
+  const handleSubmitMatieres = () => {
+    if (selectedMatieres) {
+      fetch(`/api/matieres/${selectedMatieres.id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ nom: selectedMatiere.nom }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(selectedMatieres),
       })
         .then((response) => {
           if (response.ok) {
-            setMatieres(
-              matieres.map((matiere) =>
-                matiere.id === selectedMatiere.id ? selectedMatiere : matiere
-              )
-            );
-            handleCloseModal();
-          } else {
-            console.error("Erreur lors de la mise à jour de la matière");
+            fetchMatieres();
+            setIsEditModalOpen(false);
+            showSuccess("edit");
           }
         })
-        .catch((error) => {
-          console.error("Erreur lors de la mise à jour :", error);
-        });
+        .catch(console.error);
     }
   };
 
-  const handleAdd = () => {
-    if (!newMatiereName.trim()) {
-      alert("Veuillez entrer un nom pour la matière.");
-      return;
-    }
-
-    const newMatiere = {
-      nom: newMatiereName,
-    };
+  const handleAddMatieres = () => {
+    if (!newMatieresName.trim()) return;
 
     fetch("/api/matieres", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newMatiere),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nom: newMatieresName }),
     })
-      .then((response) => response.json())
-      .then((data: Matiere) => {
-        setMatieres([...matieres, data]);
-        setNewMatiereName("");
-        setIsSuccess(true);
-        setTimeout(() => {
-          handleCloseModal();
-        }, 2000);
+      .then((res) => res.json())
+      .then(() => {
+        fetchMatieres();
+        setNewMatieresName("");
+        showSuccess("add");
       })
-      .catch((error) => {
-        console.error("Erreur lors de l'ajout de la matière :", error);
-      });
+      .catch(console.error);
   };
 
-  const openDeleteDialog = (matiere: Matiere) => {
-    setSelectedMatiere(matiere);
-    setIsDeleteDialogOpen(true); // Ouvre le dialog de suppression
-  };
-
-  const closeDeleteDialog = () => {
-    setIsDeleteDialogOpen(false);
-    setSelectedMatiere(null);
-  };
-
-  const confirmDelete = () => {
-    if (selectedMatiere) {
-      handleDelete(selectedMatiere.id);
-      closeDeleteDialog();
-    }
+  const successMessages = {
+    add: "Matière ajoutée avec succès !",
+    edit: "Matière modifiée avec succès !",
+    delete: "Matière supprimée avec succès !",
   };
 
   return (
     <div className="space-y-6">
       {isSuccess && (
         <div className="mb-4 rounded-lg border border-green-500 bg-green-100 p-4 text-green-800">
-          Matière ajoutée avec succès !
+          {successMessages[operationType]}
         </div>
       )}
 
+      {/* Ajout de matière */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-3xl font-bold">Matières</h1>
+        <h1 className="text-3xl font-bold">Gestion des Matières</h1>
         <Dialog>
           <DialogTrigger asChild>
             <Button>
               <PlusCircle className="mr-2 h-4 w-4" />
-              Ajouter matière
+              Nouvelle matière
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Ajouter une nouvelle matière</DialogTitle>
+              <DialogTitle>Création de matière</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Nom matière</Label>
+                <Label>Nom de la matière</Label>
                 <Input
-                  id="name"
-                  value={newMatiereName}
-                  onChange={(e) => setNewMatiereName(e.target.value)}
-                  placeholder="Entrer le nom"
+                  value={newMatieresName}
+                  onChange={(e) => setNewMatieresName(e.target.value)}
+                  placeholder="Saisir le nom..."
                 />
               </div>
-              <Button className="w-full" onClick={handleAdd}>
-                Ajouter Matière
-              </Button>
+              <Button onClick={handleAddMatieres}>Enregistrer</Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
+      {/* Liste des matières */}
       <div className="rounded-md border">
         <ScrollArea className="h-[calc(100vh-16rem)]">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Identidiant</TableHead>
+                <TableHead>Identifiant</TableHead>
                 <TableHead>Nom</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -211,17 +167,25 @@ export default function MatieresPage() {
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
+                        <Button variant="ghost" size="sm">
                           <EllipsisVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEdit(matiere)}>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setSelectedMatieres(matiere);
+                            setIsEditModalOpen(true);
+                          }}
+                        >
                           Modifier
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => openDeleteDialog(matiere)}
                           className="text-red-500"
+                          onClick={() => {
+                            setSelectedMatieres(matiere);
+                            setIsDeleteDialogOpen(true);
+                          }}
                         >
                           Supprimer
                         </DropdownMenuItem>
@@ -235,49 +199,52 @@ export default function MatieresPage() {
         </ScrollArea>
       </div>
 
-      {/* Dialog de confirmation de suppression */}
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      {/* Modals */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Confirmation de la suppression</DialogTitle>
+            <DialogTitle>Modification de matière</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p>Êtes-vous sûr de vouloir supprimer cette matière ?</p>
-            <div className="flex space-x-2">
-              <Button variant="ghost" onClick={closeDeleteDialog}>
-                Annuler
-              </Button>
-              <Button className="bg-red-500" onClick={confirmDelete}>
-                Confirmer
-              </Button>
-            </div>
+            <Input
+              value={selectedMatieres?.nom || ""}
+              onChange={(e) =>
+                setSelectedMatieres({
+                  ...selectedMatieres!,
+                  nom: e.target.value,
+                })
+              }
+              placeholder="Nom de la matière"
+            />
+            <Button onClick={handleSubmitMatieres}>Sauvegarder</Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Modifier Matière</DialogTitle>
+            <DialogTitle>Confirmation de suppression</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="edit-name">Nom matière</Label>
-              <Input
-                id="edit-name"
-                value={selectedMatiere?.nom || ""}
-                onChange={(e) =>
-                  setSelectedMatiere({
-                    ...selectedMatiere!,
-                    nom: e.target.value,
-                  })
-                }
-                placeholder="Entrer le nom"
-              />
+            <p>Êtes-vous sûr de vouloir supprimer cette matière ?</p>
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setIsDeleteDialogOpen(false)}
+              >
+                Annuler
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  if (selectedMatieres) handleDelete(selectedMatieres.id);
+                  setIsDeleteDialogOpen(false);
+                }}
+              >
+                Confirmer
+              </Button>
             </div>
-            <Button className="w-full" onClick={handleSave}>
-              Enregistrer
-            </Button>
           </div>
         </DialogContent>
       </Dialog>

@@ -27,16 +27,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Professeurs } from "@/types/route";
+import { Matieres, Professeurs } from "@/types/route";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Link from "next/link";
 
 export default function ProfesseursPage() {
+  const [matieres, setMatieres] = useState<Matieres[]>([]);
   const [professeurs, setProfesseurs] = useState<Professeurs[]>([]);
   const [inputMethod, setInputMethod] = useState<"manual" | "xlsx">("manual");
 
   useEffect(() => {
     fetchProfesseurs();
+    fetchMatieres();
   }, []);
 
   const fetchProfesseurs = async () => {
@@ -48,6 +50,13 @@ export default function ProfesseursPage() {
     } catch (error) {
       console.error("Error fetching professeurs:", error);
     }
+  };
+
+  const fetchMatieres = () => {
+    fetch("/api/matieres")
+      .then((response) => response.json())
+      .then(setMatieres)
+      .catch(console.error);
   };
 
   const handleCreate = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -64,7 +73,16 @@ export default function ProfesseursPage() {
       const statut = formData.get("statut") as string;
       const photo_profil = formData.get("photo_profil") as File;
 
-      if (!email || !password || !nom || !prenom || !telephone || !statut ||(!photo_profil || photo_profil.size === 0)) {
+      if (
+        !email ||
+        !password ||
+        !nom ||
+        !prenom ||
+        !telephone ||
+        !statut ||
+        !photo_profil ||
+        photo_profil.size === 0
+      ) {
         alert("Please fill all required fields for manual entry.");
         return;
       }
@@ -76,7 +94,8 @@ export default function ProfesseursPage() {
       data.append("telephone", telephone);
       data.append("statut", statut);
       data.append("photo_profil", photo_profil);
-      data.append("matieresdetails", "[\"1\",\"2\"]");
+      const selectedMatieres = formData.getAll("matieresdetails");
+      data.append("matieresdetails", JSON.stringify(selectedMatieres));
     } else {
       const file = formData.get("excel_file") as File;
       if (!file || file.size === 0) {
@@ -94,7 +113,9 @@ export default function ProfesseursPage() {
 
       if (!response.ok) throw new Error("Failed to create professor");
       fetchProfesseurs();
-      (document.getElementById("create-dialog-trigger") as HTMLButtonElement)?.click();
+      (
+        document.getElementById("create-dialog-trigger") as HTMLButtonElement
+      )?.click();
     } catch (error) {
       console.error("Error creating professor:", error);
     }
@@ -102,9 +123,12 @@ export default function ProfesseursPage() {
 
   const handleDelete = async (id: number) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/professeurs/${id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `http://localhost:3000/api/professeurs/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to delete professor");
       fetchProfesseurs();
@@ -132,7 +156,9 @@ export default function ProfesseursPage() {
               <div className="space-y-4">
                 <RadioGroup
                   value={inputMethod}
-                  onValueChange={(value: "manual" | "xlsx") => setInputMethod(value)}
+                  onValueChange={(value: "manual" | "xlsx") =>
+                    setInputMethod(value)
+                  }
                   className="flex space-x-4"
                 >
                   <div className="flex items-center space-x-2">
@@ -226,24 +252,32 @@ export default function ProfesseursPage() {
                     </div>
                     <div className="space-y-2">
                       <Label className="text-sm font-medium text-foreground">
-                      Matières
+                        Matières
                       </Label>
-                      <select
-                        multiple
-                        name="matieresdetails"
-                        className="flex h-32 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        required
-                      >
-                        <option value="1">Math</option>
-                        <option value="2">OOP</option>
-                        <option value="3">Physique</option>
-                        <option value="3">Informatique</option>
-                      </select>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-foreground">
+                          Matières
+                        </Label>
+                        <select
+                          multiple
+                          name="matieresdetails"
+                          className="flex h-32 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                          required
+                        >
+                          {matieres.map((matiere) => (
+                            <option key={matiere.id} value={matiere.id}>
+                              {matiere.nom}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
                   </>
                 ) : (
                   <div className="space-y-2">
-                    <Label htmlFor="excel_file">Ajouter des professeurs via fichier XLSX</Label>
+                    <Label htmlFor="excel_file">
+                      Ajouter des professeurs via fichier XLSX
+                    </Label>
                     <Input
                       id="excel_file"
                       name="excel_file"
@@ -255,7 +289,7 @@ export default function ProfesseursPage() {
                 )}
 
                 <Button type="submit" className="w-full">
-                Ajouter Professeur
+                  Ajouter Professeur
                 </Button>
               </div>
             </form>
@@ -285,7 +319,9 @@ export default function ProfesseursPage() {
                   <TableCell>{professor.user.nom}</TableCell>
                   <TableCell>{professor.user.prenom}</TableCell>
                   <TableCell>{professor.user.telephone}</TableCell>
-                  <TableCell>{new Date(professor.user.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    {new Date(professor.user.created_at).toLocaleDateString()}
+                  </TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -295,14 +331,16 @@ export default function ProfesseursPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem>
-                          <Link href={`http://localhost:3000/api/professeurs/${professor.id}/card`}>
+                          <Link
+                            href={`http://localhost:3000/api/professeurs/${professor.id}/card`}
+                          >
                             Carte Professionnelle
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          Modifier
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDelete(professor.id)}>
+                        <DropdownMenuItem>Modifier</DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDelete(professor.id)}
+                        >
                           <span className="text-red-500">Supprimer</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
