@@ -76,17 +76,17 @@ export default function ProfilePage() {
 
       if (response.ok) {
         const result = await response.json();
-        setAlertMessage({ type: 'success', message: 'Profile updated successfully!' });
+        setAlertMessage({ type: 'success', message: 'Le profile a été modifier!' });
         // Update photo preview if new image was uploaded
         if (fileInput.files?.[0]) {
           setPhotoPreview(URL.createObjectURL(fileInput.files[0]));
         }
       } else {
         const error = await response.json();
-        setAlertMessage({ type: 'error', message: error.error || 'Update failed' });
+        setAlertMessage({ type: 'error', message: error.error || 'Echec modification' });
       }
     } catch (error) {
-      setAlertMessage({ type: 'error', message: 'Update failed. Please try again.' });
+      setAlertMessage({ type: 'error', message: 'Echec modification. Essayer autre fois.' });
     } finally {
       setTimeout(() => setAlertMessage(null), 5000);
     }
@@ -152,7 +152,7 @@ export default function ProfilePage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="nom">Last Name</Label>
+                <Label htmlFor="nom"> Nom</Label>
                 <Input
                   id="nom"
                   value={userData.nom}
@@ -160,7 +160,7 @@ export default function ProfilePage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="prenom">First Name</Label>
+                <Label htmlFor="prenom">Prénom</Label>
                 <Input
                   id="prenom"
                   value={userData.prenom}
@@ -177,7 +177,7 @@ export default function ProfilePage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="telephone">Phone Number</Label>
+                <Label htmlFor="telephone">Numéro Téléphone</Label>
                 <Input
                   id="telephone"
                   value={userData.telephone}
@@ -199,22 +199,22 @@ export default function ProfilePage() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button type="submit">Save Changes</Button>
+              <Button type="submit">Enregistrer</Button>
             </form>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Password</CardTitle>
+            <CardTitle>Mot de passe</CardTitle>
             <CardDescription>
-              Change your password here. Please use a strong password.
+            Changez votre mot de passe ici. Veuillez utiliser un mot de passe fort de 8 caractéres.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <form onSubmit={handlePasswordSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="current">Current Password</Label>
+                <Label htmlFor="current">Mot de passe actuel</Label>
                 <Input
                   id="current"
                   type="password"
@@ -223,7 +223,7 @@ export default function ProfilePage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="new">New Password</Label>
+                <Label htmlFor="new">Nouveau mot de passe</Label>
                 <Input
                   id="new"
                   type="password"
@@ -232,7 +232,7 @@ export default function ProfilePage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirm">Confirm New Password</Label>
+                <Label htmlFor="confirm">Confirmer le nouveau mot de passe</Label>
                 <Input
                   id="confirm"
                   type="password"
@@ -240,7 +240,7 @@ export default function ProfilePage() {
                   onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                 />
               </div>
-              <Button type="submit">Update Password</Button>
+              <Button type="submit">Mettre à jour le mot de passe</Button>
             </form>
           </CardContent>
         </Card>

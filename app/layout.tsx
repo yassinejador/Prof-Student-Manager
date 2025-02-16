@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "School Management System",
+  title: "Système de gestion des  professeurs",
   description: "Manage professors and matieres efficiently",
 };
 
@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="fr" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>
           <div className="flex min-h-screen">
@@ -37,7 +37,7 @@ export default function RootLayout({
                 <div className="h-full flex flex-col">
                   <div className="flex items-center gap-2 px-6 py-4">
                     <GraduationCap className="h-6 w-6" />
-                    <h1 className="font-semibold">School Management</h1>
+                    <h1 className="font-semibold">Gestion d'université</h1>
                   </div>
                   <Separator />
                   <div className="flex-1 px-2 py-4">
@@ -55,7 +55,7 @@ export default function RootLayout({
             <div className="hidden md:flex w-64 flex-col border-r bg-background">
               <div className="flex items-center gap-2 px-6 py-4">
                 <GraduationCap className="h-6 w-6" />
-                <h1 className="font-semibold">School Management</h1>
+                <h1 className="font-semibold">Gestion d'université</h1>
               </div>
               <Separator />
               <div className="flex-1 px-2 py-4">
