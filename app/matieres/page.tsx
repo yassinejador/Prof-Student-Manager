@@ -198,6 +198,7 @@ export default function MatieresPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Identidiant</TableHead>
                 <TableHead>Nom</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -205,6 +206,7 @@ export default function MatieresPage() {
             <TableBody>
               {matieres.map((matiere) => (
                 <TableRow key={matiere.id}>
+                  <TableCell>{matiere.id}</TableCell>
                   <TableCell>{matiere.nom}</TableCell>
                   <TableCell>
                     <DropdownMenu>
