@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { LayoutDashboard, GraduationCap, BookOpen, User, Logs } from "lucide-react";
+import LogoutButton from "./LogoutButton";
 
 export function MainNav() {
   const pathname = usePathname();
@@ -17,7 +18,8 @@ export function MainNav() {
   ];
 
   return (
-    <nav className="space-y-2">
+    <nav className=" flex flex-col h-full justify-between">
+      <div className="space-y-2">
       {navigation.map((item) => {
         const Icon = item.icon;
         return (
@@ -34,6 +36,10 @@ export function MainNav() {
           </Link>
         );
       })}
+{/* Bouton de déconnexion */}
+       
+        <LogoutButton />
+        </div>
     </nav>
   );
 }
