@@ -48,7 +48,7 @@ export default function AuthPage() {
         // Vérifie que le token est bien stocké
         localStorage.setItem("token", data.token); // Stocker le token
         
-        router.push("/"); // Redirection après connexion
+        router.refresh(); // Redirection après connexion
       } else {
         setAlert({ message: "Compte créé ! Vous pouvez maintenant vous connecter.", type: "success" });
         setIsLogin(true); // Basculer vers le formulaire de connexion après inscription

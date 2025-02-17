@@ -16,7 +16,7 @@ export default function LogoutButton() {
             await fetch("/api/auth/logout", { method: "POST" });
             setShowConfirmation(false);
             // Redirection vers la page de connexion
-            router.push("/auth");
+            router.refresh();
         } catch (error) {
             console.error("Erreur lors de la déconnexion", error);
         } finally {
