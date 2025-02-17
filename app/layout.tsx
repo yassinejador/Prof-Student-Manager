@@ -9,6 +9,7 @@ import { GraduationCap, Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { cookies } from 'next/headers'
+import { getAuthenticatedUser } from "./api/auth/login/route";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,8 +23,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies()
-  const token = cookieStore.get('token')
+  const cookieStore = await cookies();
+  const token = cookieStore.get('token');
+  const user=await getAuthenticatedUser();
   return (
     <html lang="fr" suppressHydrationWarning>
       <body className={inter.className}>
@@ -62,7 +64,7 @@ export default async function RootLayout({
               </div>
               <Separator />
               <div className="flex-1 px-2 py-4">
-                <MainNav />
+                <MainNav  user={user}  />
               </div>
               <div className="px-6 py-4">
                 <Separator className="mb-4" />

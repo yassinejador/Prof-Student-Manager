@@ -9,7 +9,7 @@ CREATE TABLE `Users` (
     `nom` VARCHAR(191) NOT NULL,
     `prenom` VARCHAR(191) NOT NULL,
     `telephone` VARCHAR(191) NOT NULL,
-    `role` ENUM('professeur', 'etudiant') NOT NULL,
+    `role` ENUM('admin','professeur', 'etudiant') NOT NULL,
     `photo_profil` VARCHAR(191) NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
