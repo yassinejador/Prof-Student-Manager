@@ -5,9 +5,9 @@ INSERT INTO Users (email, password, role, nom, prenom, telephone, photo_profil) 
 ('prof2@example.com', 'hashedpassword2', 'professeur', 'Martin', 'Claire', '0601020304', 'default-user.png');
 
 -- Ajout des professeurs
-INSERT INTO Professeurs (user_id, statut) VALUES
-(1, 'permanent'),
-(2, 'vacataire');
+INSERT INTO Professeurs (user_id, statut, departement) VALUES
+(1, 'permanent','informatique'),
+(2, 'vacataire','Mathématique');
 
 -- Ajout des matières
 INSERT INTO Matieres ( nom) VALUES
