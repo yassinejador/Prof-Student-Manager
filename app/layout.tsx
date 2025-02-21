@@ -26,6 +26,7 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const token = cookieStore.get('token');
   const user=await getAuthenticatedUser();
+
   return (
     <html lang="fr" suppressHydrationWarning>
       <body className={inter.className}>

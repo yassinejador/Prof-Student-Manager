@@ -43,7 +43,7 @@ try {
 // Texte sur le bandeau
 
     // Texte sur le bandeau
-    page.drawText("FACULTY OF SCIENCES EL JADIDA", {
+    page.drawText("FACULTE DE SCIENCES EL JADIDA", {
         x: 150, y: 350, font: boldFont, size: 16, color: rgb(1, 1, 1),
     });
 
@@ -68,17 +68,73 @@ try {
     });
     
     // Photo du professeur
-    if (professeur.user.photo_profil) {
+    try {
+        let photoUrl = professeur.user.photo_profil ? professeur.user.photo_profil.trim() : "";
+    
+        if (!photoUrl) {
+            throw new Error("Aucune photo de profil fournie.");
+        }
+    
+        // Vérifier si l'URL est relative ou absolue
+        if (!photoUrl.startsWith("http")) {
+            photoUrl = `http://localhost:3000/images/users/${photoUrl}`;
+        }
+    
+        console.log("Tentative de récupération de l'image :", photoUrl);
+    
+        const photoResponse = await fetch(photoUrl);
+        if (!photoResponse.ok) {
+            throw new Error(`Erreur HTTP lors du chargement de l'image : ${photoResponse.status}`);
+        }
+    
+        const photoBuffer = Buffer.from(await photoResponse.arrayBuffer());
+        console.log("Taille de l'image récupérée :", photoBuffer.length);
+    
+        // Vérification du type MIME
+        const contentType = photoResponse.headers.get("content-type") || "";
+        console.log("Content-Type de l'image :", contentType);
+    
+        if (!contentType.startsWith("image/")) {
+            throw new Error("Le fichier récupéré n'est pas une image valide.");
+        }
+    
+        let finalBuffer = photoBuffer;
+    
+        // Conversion en PNG si nécessaire
+        if (contentType !== "image/png") {
+            console.log("Conversion en PNG...");
+            try {
+                const metadata = await sharp(photoBuffer).metadata();
+                console.log("Image reconnue, format :", metadata.format);
+                finalBuffer = await sharp(photoBuffer).png().toBuffer();
+            } catch (error) {
+                console.error("Échec de la lecture/conversion de l'image :", error);
+                throw new Error("L'image récupérée est corrompue ou non prise en charge.");
+            }
+        }
+    
+        // Intégrer l’image au PDF
+        const img = await pdfDoc.embedPng(finalBuffer);
+        page.drawImage(img, { x: 50, y: 180, width: 100, height: 100 });
+    
+        console.log("Image ajoutée avec succès au PDF !");
+    } catch (error) {
+        console.error('Erreur lors du chargement de la photo de profil :', error);
+        
+        // Chargement d'une image par défaut si l'image est invalide
         try {
-            const photo = await fetch(`http://localhost:3000/images/users/${professeur.user.photo_profil}`);
-            const photoArrayBuffer = await photo.arrayBuffer(); // Utilisation de arrayBuffer()
-            const photoUint8Array = new Uint8Array(photoArrayBuffer); // Convertir en Uint8Array
-            const img = await pdfDoc.embedPng(photoUint8Array);
-            page.drawImage(img, { x: 50, y: 180, width: 100, height: 100 });
-        } catch (error) {
-            console.error('Erreur lors du chargement de la photo de profil:', error);
+            console.log("Chargement de l'image par défaut...");
+            const defaultImagePath = 'public/default-user.png';  // Assurez-vous d'avoir une image par défaut
+            const defaultBuffer = fs.readFileSync(defaultImagePath);
+            const defaultImg = await pdfDoc.embedPng(defaultBuffer);
+            page.drawImage(defaultImg, { x: 50, y: 180, width: 100, height: 100 });
+            console.log("Image par défaut ajoutée avec succès !");
+        } catch (defaultError) {
+            console.error("Erreur lors du chargement de l'image par défaut :", defaultError);
         }
     }
+    
+        
     
     // Nom du professeur
     page.drawText("Professeur", {

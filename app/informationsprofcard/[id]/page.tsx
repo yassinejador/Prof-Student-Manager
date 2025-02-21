@@ -20,13 +20,17 @@ interface ProfesseurDetailProps {
     };
 }
 
+export const metadata = {
+    layout: null, // Cela désactive le layout global pour cette page spécifique
+  };
+
 export default async function ProfesseurPage({
     params,
 }: {
     params: { id: string };
 }) {
     const professeur = await prisma.professeurs.findUnique({
-        where: { id: parseInt(params.id) }, // Assurez-vous que params.id est un nombre
+        where: { id: parseInt(params.id) },
         include: {
             user: true,
             MatieresDetails: {
@@ -41,9 +45,7 @@ export default async function ProfesseurPage({
         notFound(); // Si aucun professeur n'est trouvé, retournez 404
     }
 
-    return (
-        <div className="p-8 max-w-3xl mx-auto">
-            {/* Titre du professeur */}
+    return (<div className="min-h-screen">
             <h1 className="text-4xl font-bold text-center mb-4">
                 {professeur.user.nom} {professeur.user.prenom}
             </h1>
@@ -53,7 +55,6 @@ export default async function ProfesseurPage({
                 {professeur.statut}
             </div>
 
-            {/* Tableau des informations principales */}
             <table className="min-w-full table-auto border-collapse mb-6">
                 <thead>
                     <tr>
@@ -77,8 +78,6 @@ export default async function ProfesseurPage({
                 </tbody>
             </table>
 
-            {/* Tableau des matières enseignées */}
-            
             <table className="min-w-full table-auto border-collapse">
                 <thead>
                     <tr>
