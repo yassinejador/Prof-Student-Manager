@@ -19,8 +19,8 @@ export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { id } = await params;
-  console.log(id);
+  const { id } =  await params;
+  console.log("ID reçu pour modification :", id); 
   return handleUpdate(request, id);
 }
 
@@ -36,7 +36,7 @@ async function handleUpdate(
     }
 
     const existingProfesseur = await prisma.professeurs.findUnique({
-      where: { id: Number(professeurId) },
+      where: {  id: Number(professeurId) },
       include: { user: true }
     });
 
