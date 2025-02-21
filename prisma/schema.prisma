@@ -55,7 +55,6 @@ enum Statut {
 model Matieres {
   id            Int     @id @default(autoincrement())
   nom           String  @unique
-  
   MatieresDetails MatieresDetails[]
 }
 

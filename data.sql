@@ -7,8 +7,8 @@ INSERT INTO Users (email, password, role, nom, prenom, telephone, photo_profil) 
 
 -- Ajout des professeurs
 INSERT INTO Professeurs (user_id, statut, departement) VALUES
-(1, 'permanent', 'INFO'),
-(2, 'vacataire', 'Math');
+(1, 'permanent'),
+(2, 'vacataire');
 
 -- Ajout des matières
 INSERT INTO Matieres ( nom) VALUES

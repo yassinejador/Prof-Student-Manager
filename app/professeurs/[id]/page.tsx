@@ -68,7 +68,7 @@ export default async function ProfesseurPage({
                         <div className="space-y-2">
                             <p className="font-medium">Prénom:</p>
                             <p>{professeur.user.prenom}</p>
-                        </div>
+                        </div> 
                         <div className="space-y-2">
                             <p className="font-medium">Email:</p>
                             <p>{professeur.user.email}</p>
