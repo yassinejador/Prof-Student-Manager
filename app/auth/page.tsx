@@ -29,7 +29,7 @@ export default function AuthPage() {
     setAlert(null);
 
     const endpoint = isLogin ? "/api/auth/login" : "/api/auth/signup";
-    const body = isLogin ? { email, password } : { nom, prenom, telephone, role, email, password, statut, photoProfil: "default-user.png" };
+    const body = isLogin ? { email, password } : { nom, prenom, telephone, role, email, password, statut, photo_profil: "default-user.png" };
 
     try {
       const res = await fetch(endpoint, {
@@ -65,7 +65,7 @@ export default function AuthPage() {
       <div className="w-full max-w-[1400px] rounded-xl border border-stroke bg-white shadow-default">
         <Link href="/" className="flex justify-center" aria-label="Logo Faculté des Sciences El Jadida">
           <Image
-            src="/images/logo/logo_ucd.png"
+            src="/images/logo_ucd.png"
             alt="Logo FS El Jadida"
             width={100}
             height={40}
@@ -202,15 +202,7 @@ export default function AuthPage() {
               </button>
             </form>
 
-            <p className="text-center text-sm text-gray-600 mt-4">
-              {isLogin ? "Pas encore de compte ?" : "Déjà un compte ?"}
-              <button
-                className="text-blue-500 font-medium ml-1 hover:underline"
-                onClick={() => setIsLogin(!isLogin)}
-              >
-                {isLogin ? "Créer un compte" : "Se connecter"}
-              </button>
-            </p>
+            
           </div>
         </div>
       </div>

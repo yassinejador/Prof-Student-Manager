@@ -22,6 +22,7 @@ export default function ProfilePage() {
     telephone: '',
     statut: 'permanent' as 'permanent' | 'vacataire',
     photo_profil: '',
+    role: 'professeur' as 'professeur' | 'admin',
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -37,30 +38,43 @@ export default function ProfilePage() {
     const fetchUserDataAndProfessorData = async () => {
       try {
         // Récupérer l'utilisateur connecté via l'API
-      const userResponse = await fetch('/api/auth/user');
-      if (!userResponse.ok) {
-        throw new Error('Erreur lors de la récupération des données de l\'utilisateur');
-      }
-      const user = await userResponse.json();
-        // Récupérer les informations du professeur en utilisant l'ID de l'utilisateur
-        const response = await fetch(`http://localhost:3000/api/professeurs/${user.id}/details`);
-        if (!response.ok) {
-          throw new Error('Erreur lors de la récupération des données du professeur');
+        const userResponse = await fetch('/api/auth/user');
+        if (!userResponse.ok) {
+          throw new Error('Erreur lors de la récupération des données de l\'utilisateur');
         }
-        const data = await response.json();
-        setUserData({
-          nom: data.nom,
-          prenom: data.prenom,
-          email: data.email,
-          telephone: data.telephone,
-          statut: data.statut,
-          photo_profil: data.photo_profil,
-        });
-        setPhotoPreview(data.photo_profil ? `/images/users/${data.photo_profil}` : '');
+        const user = await userResponse.json();
+
+        // Mettre à jour les données de l'utilisateur
+        setUserData((prevData) => ({
+          ...prevData,
+          nom: user.nom,
+          prenom: user.prenom,
+          email: user.email,
+          telephone: user.telephone,
+          role: user.role, // Récupérer le rôle de l'utilisateur
+          photo_profil: user.photo_profil,
+        }));
+
+        // Si l'utilisateur est un professeur, récupérer les informations du professeur
+        if (user.role === 'professeur') {
+          const response = await fetch(`http://localhost:3000/api/professeurs/${user.id}/user`);
+          if (!response.ok) {
+            throw new Error('Erreur lors de la récupération des données du professeur');
+          }
+          const data = await response.json();
+          setUserData((prevData) => ({
+            ...prevData,
+            statut: data.statut,
+          }));
+        }
+
+        // Mettre à jour l'aperçu de la photo de profil
+        setPhotoPreview(user.photo_profil ? `/images/users/${user.photo_profil}` : '');
       } catch (error) {
         setAlertMessage({ type: 'error', message: 'Failed to load profile data' });
       }
     };
+
     fetchUserDataAndProfessorData();
   }, []);
 
@@ -72,7 +86,11 @@ export default function ProfilePage() {
       formData.append('prenom', userData.prenom);
       formData.append('email', userData.email);
       formData.append('telephone', userData.telephone);
-      formData.append('statut', userData.statut);
+
+      // Ajouter le statut uniquement si l'utilisateur est un professeur
+      if (userData.role === 'professeur') {
+        formData.append('statut', userData.statut);
+      }
 
       const fileInput = document.getElementById('photo_profil') as HTMLInputElement;
       if (fileInput.files?.[0]) {
@@ -80,25 +98,27 @@ export default function ProfilePage() {
       }
 
       // Récupérer l'utilisateur connecté via l'API
-    const userResponse = await fetch('/api/auth/user');
-    if (!userResponse.ok) {
-      throw new Error('Erreur lors de la récupération des données de l\'utilisateur');
-    }
-    const user = await userResponse.json();
+      const userResponse = await fetch('/api/auth/user');
+      if (!userResponse.ok) {
+        throw new Error('Erreur lors de la récupération des données de l\'utilisateur');
+      }
+      const user = await userResponse.json();
+
       if (!user) {
         setAlertMessage({ type: 'error', message: 'Utilisateur non authentifié' });
         return;
       }
-      const response = await fetch(`/api/professeurs/${user.id}`, {
+
+      // Envoyer les données mises à jour
+      const response = await fetch(`/api/professeurs/update/${user.id}`, {
         method: 'PATCH',
         body: formData,
       });
 
-
       if (response.ok) {
         const result = await response.json();
         setAlertMessage({ type: 'success', message: 'Profile updated successfully!' });
-        // Update photo preview if new image was uploaded
+        // Mettre à jour l'aperçu de la photo si une nouvelle image a été téléchargée
         if (fileInput.files?.[0]) {
           setPhotoPreview(URL.createObjectURL(fileInput.files[0]));
         }
@@ -114,6 +134,8 @@ export default function ProfilePage() {
   };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Logique pour la mise à jour du mot de passe
   };
 
   return (
@@ -137,10 +159,11 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Information Personel</CardTitle>
+            <CardTitle>Information Personnelle</CardTitle>
             <CardDescription>
               Modifiez vos informations personnelles
             </CardDescription>
@@ -148,12 +171,12 @@ export default function ProfilePage() {
           <CardContent className="space-y-4">
             <form onSubmit={handleProfileSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="photo_profil">Profile Photo</Label>
+                <Label htmlFor="photo_profil">Photo de profil</Label>
                 <div className="flex items-center gap-4">
                   {photoPreview && (
                     <Image
                       src={photoPreview}
-                      alt="Profile Photo"
+                      alt="Photo de profil"
                       width={64}
                       height={64}
                       className="w-16 h-16 rounded-full object-cover"
@@ -173,7 +196,7 @@ export default function ProfilePage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="nom">Last Name</Label>
+                <Label htmlFor="nom">Nom</Label>
                 <Input
                   id="nom"
                   value={userData.nom}
@@ -181,7 +204,7 @@ export default function ProfilePage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="prenom">First Name</Label>
+                <Label htmlFor="prenom">Prénom</Label>
                 <Input
                   id="prenom"
                   value={userData.prenom}
@@ -198,44 +221,46 @@ export default function ProfilePage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="telephone">Phone Number</Label>
+                <Label htmlFor="telephone">Téléphone</Label>
                 <Input
                   id="telephone"
                   value={userData.telephone}
                   onChange={(e) => setUserData({ ...userData, telephone: e.target.value })}
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="statut">Status</Label>
-                <Select
-                  value={userData.statut}
-                  onValueChange={(value) => setUserData({ ...userData, statut: value as typeof userData.statut })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="permanent">Permanent</SelectItem>
-                    <SelectItem value="vacataire">Vacataire</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button type="submit">Save Changes</Button>
+              {userData.role === 'professeur' && (
+                <div className="space-y-2">
+                  <Label htmlFor="statut">Statut</Label>
+                  <Select
+                    value={userData.statut}
+                    onValueChange={(value) => setUserData({ ...userData, statut: value as typeof userData.statut })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez un statut" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="permanent">Permanent</SelectItem>
+                      <SelectItem value="vacataire">Vacataire</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              <Button type="submit">Enregistrer les modifications</Button>
             </form>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Password</CardTitle>
+            <CardTitle>Mot de passe</CardTitle>
             <CardDescription>
-              Change your password here. Please use a strong password.
+              Changez votre mot de passe ici. Veuillez utiliser un mot de passe fort.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <form onSubmit={handlePasswordSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="current">Current Password</Label>
+                <Label htmlFor="current">Mot de passe actuel</Label>
                 <Input
                   id="current"
                   type="password"
@@ -244,7 +269,7 @@ export default function ProfilePage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="new">New Password</Label>
+                <Label htmlFor="new">Nouveau mot de passe</Label>
                 <Input
                   id="new"
                   type="password"
@@ -253,7 +278,7 @@ export default function ProfilePage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirm">Confirm New Password</Label>
+                <Label htmlFor="confirm">Confirmez le nouveau mot de passe</Label>
                 <Input
                   id="confirm"
                   type="password"
@@ -261,7 +286,7 @@ export default function ProfilePage() {
                   onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                 />
               </div>
-              <Button type="submit">Update Password</Button>
+              <Button type="submit">Mettre à jour le mot de passe</Button>
             </form>
           </CardContent>
         </Card>
