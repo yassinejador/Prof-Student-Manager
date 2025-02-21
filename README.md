@@ -1,37 +1,126 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏰 Application de Gestion des Professeurs et Étudiants
 
-## Getting Started
+## 📚 Description
 
-First, run the development server:
+Application web développée avec **Next.js** pour la gestion des professeurs et des étudiants universitaires.
+Fonctionnalités principales :
+
+- Gestion des professeurs (saisie, importation Excel, génération de cartes professionnelles).
+- Authentification et gestion des rôles (professeurs et admin).
+- Suivi des actions avec un système de logs.
+
+---
+
+## 🛠 Stack Technique
+
+| Catégorie            | Technologies          |
+| -------------------- | --------------------- |
+| **Framework**        | Next.js 14            |
+| **Base de données**  | MySQL 8+              |
+| **Authentification** | JWT (JSON Web Tokens) |
+| **Style**            | Tailwind CSS          |
+| **ORM**              | Prisma                |
+
+---
+
+## ✅ Prérequis
+
+### Vérifications système
+
+1. **Node.js 16.x+** :
+
+   ```bash
+   node -v
+   ```
+
+   [Télécharger Node.js](https://nodejs.org/) si non installé
+
+2. **npm** (inclus avec Node.js) :
+
+   ```bash
+   npm -v
+   ```
+
+3. **MySQL 8+** :
+
+   ```bash
+   mysql --version
+   ```
+
+   [Installer MySQL](https://dev.mysql.com/downloads/)
+
+---
+
+## 🚀 Démarrage Rapide
+
+### 1. Clonage du dépôt
+
+```bash
+git clone https://github.com/yassinejador/Prof-Student-Manager.git
+cd prof-student-manager
+```
+
+### 2. Installation des dépendances
+
+```bash
+npm install
+```
+
+### 3. Configuration de l'environnement (`.env`)
+
+#### Copier `.env.example` dans `.env`
+
+```bash
+cp .env.example .env
+```
+
+#### Puis le configurer :
+
+```env
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USERNAME=VOTRE_UTILISATEUR
+DB_PASSWORD=VOTRE_MDP
+DATABASE_URL=mysql://VOTRE_UTILISATEUR:VOTRE_MDP@localhost:3306/db_prof_student_manager
+DB_NAME=db_prof_student_manager
+JWT_SECRET=VOTRE_JWT_SECRET
+```
+
+#### Vous pouvez exécuter la commande suivante pour générer une clé secrète JWT :
+
+```bash
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
+
+### 4. Lancer la base de données et appliquer le schéma Prisma
+
+```bash
+npx prisma generate
+npx prisma migrate dev --name init
+```
+
+### 5. Lancement de l'application
 
 ```bash
 npm run dev
-npx prisma generate
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 👥 Contributeurs
 
-## Learn More
+| Membre            | GitHub                                            |
+| ----------------- | ------------------------------------------------- |
+| Oussama TAGHLAOUI | [ouss-tagh-dev](https://github.com/ouss-tagh-dev) |
+| Yassmin ELBAZ     | [yassminelbaz](https://github.com/yassminelbaz)   |
+| Yassine JADOR     | [yassinejador](https://github.com/yassinejador)   |
+| Sanaa AZZA        | [sanaaazza](https://github.com/sanaaazza)         |
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
